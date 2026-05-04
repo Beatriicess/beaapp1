@@ -20,14 +20,14 @@ void main() async {
       case "login":
         menu = await Navegacion.login();
         break;
-
+//HOME
       case "home":
       menu = await Navegacion.home();
-
+//BUSCAR
       case "buscar":
       menu = await Navegacion.buscar();
     }
-    
+//SALIR
     if (menu == "salir") {
       print("Has elegido salir");
       break;

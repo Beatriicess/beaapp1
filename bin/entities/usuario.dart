@@ -13,8 +13,8 @@ class Usuario extends ModelClass{ //El main recoge los datos y la clase los comp
   @override
   String primaryKey = "idusuario";
 
-  Usuario(this.idusuario, this.nombre, this.nick, this.password, this.monedas); //Este es el constructor
-
+  Usuario(this.idusuario, this.nombre, this.nick, this.password, this.monedas); //Este es el constructor con argumentos posicionales
+//CONTRUCTOR NOMBRADO
   Usuario.fromDatabase(ResultRow row){
      
     idusuario = row['idusuario'] ?? -1;

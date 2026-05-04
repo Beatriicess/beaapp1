@@ -117,7 +117,7 @@ abstract class Navegacion {
       return "login";
     }
   }
-
+//CREAMOS EL MENÚ HOME
   static Future<String> home() async {
     String? opcion;
     do {
@@ -133,7 +133,7 @@ abstract class Navegacion {
       return "salir";
     }
   }
-
+//CREAMOS EL MENÚ BUSCAR
   static Future<String> buscar() async {
     //VARIABLES DE LISTAS DECLARADAS DENTRO DEL MÉTODO
     List<Contenido> favoritos = [];

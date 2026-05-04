@@ -13,8 +13,9 @@ fromDatabase(ResultRow row);
      List listado =[];
     try{
       conn = await DataBase.obtenerConexion();
+      //manda a la bd q selecione todo desde tablaName
     var registros = await conn.query("SELECT * FROM $tableName");
-   
+   //recorre la lista para añadir luego
     for ( ResultRow registro in registros){
     listado.add(fromDatabase(registro));
     

@@ -19,6 +19,7 @@ class Contenido extends ModelClass {
   Contenido(this.nombre, this.descripcion, this.tipo,this.precio, [this.idContenido]);
   // Constructor desde base de datos
   Contenido.fromDataBase(ResultRow row)
+  //obtiene el valor de la bbdd y le dice si es null que sea -1, un string o 0
     : idContenido = row['idContenido'] ?? -1,
       nombre = row['nombre'] ?? "",
       descripcion = row['descripcion'] ?? "",
@@ -35,9 +36,11 @@ class Contenido extends ModelClass {
     var url = Uri.parse(
       "https://api.disneyapi.dev/character?name=$identificador",
     );
+    //response es la respuesta del servidor 
     var response = await http.get(url);
    
     if (response.statusCode == 200) {
+      //los datos de la API
       var data = jsonDecode(response.body);
       // La API de Disney devuelve los resultados en data['data']
       var lista = data['data'];
@@ -65,7 +68,7 @@ class Contenido extends ModelClass {
 if (item == null) {
   descripcion = "Sin información disponible";
 } 
-// 2. Usamos ?. para acceder de forma segura a las llaves
+// 2. Usamos ? para acceder de forma segura a las llaves
 else if (item['films'] != null && (item['films'] as List).isNotEmpty) {
   descripcion = "Aparece en: ${item['films'].join(', ')}";
 } else if (item['tvShows'] != null && (item['tvShows'] as List).isNotEmpty) {
@@ -83,7 +86,7 @@ return Contenido(
   item['films'] != null && item['films'].isNotEmpty
       ? "Película"
       : "Personaje",
-      item['id'] ?? -1, // Disney API sí devuelve un id
+      item['id'] ?? -1, //La API sí devuelve un id
 
 );
   
