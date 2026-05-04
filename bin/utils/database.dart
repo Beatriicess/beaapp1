@@ -1,4 +1,5 @@
 import 'package:mysql1/mysql1.dart';
+
 //AQUI GESTIONO TODA LA CONEXION CON MYSQL
 //SEPARA LA LOGICA DE LA BBDD DEL RESTO DE PROGRAMA
 abstract class DataBase {
@@ -8,21 +9,24 @@ abstract class DataBase {
   //Cuál es la idea de las propiedades y métodos static? Que no son parte de los objetos, están como por encima de los objetos,
   //en el sentido de que, si yo creo objeto tipo alumno, guardo ese objeto, y el metodo se ejecuta sobre el propio objeto,
   //los static, da igual que objeto le ejecuta, la ejecución sería la misma
-  static final String _host = "localhost"; //127.0.0.1, es nuesto servidor, si es otro servidor, es con la IP
-  static final int _port = 3306; // Históricamente, MYSQL ocupa el puerto 3306, es el habitual
+  static final String _host =
+      "localhost"; //127.0.0.1, es nuesto servidor, si es otro servidor, es con la IP
+  static final int _port =
+      3306; // Históricamente, MYSQL ocupa el puerto 3306, es el habitual
   static final String _user = "root";
   static final String _dbName = "miprimeraapiDISNEY";
 
   //Final y cons para impedir que los valores de la variables cambien
 
-  static Future<void> instalacion() async { //El método instalación, lo 1º que ejecuta mi app
+  static Future<void> instalacion() async {
+    //El método instalación, lo 1º que ejecuta mi app
     // El void significa que no devuelve nada
     //Cuando ponemos un método async le tenemos que dar el Future, porque nos lo dará en el futuro
-    var settings = ConnectionSettings(host: _host, port: _port, user: _user, );
+    var settings = ConnectionSettings(host: _host, port: _port, user: _user);
     MySqlConnection conn = await MySqlConnection.connect(settings);
-    // CREA LA BBDD SI NO EXISTE  
+    // CREA LA BBDD SI NO EXISTE
     await conn.query(
-      "CREATE DATABASE IF NOT EXISTS $_dbName"
+      "CREATE DATABASE IF NOT EXISTS $_dbName",
     ); //Query se utiliza para lanzar sentencias a la bbdd
     await conn.query("USE $_dbName");
     await crearTablaUsers(conn);
@@ -33,19 +37,21 @@ abstract class DataBase {
     await crearTablaAlquileres(conn);
     await conn.close();
   }
-  //CONEXION 
+  //CONEXION
 
   static Future<MySqlConnection> obtenerConexion() async {
-    var settings = ConnectionSettings( //lo siguiente es un constructor con argumentos nombrados
-      host: _host, 
-      port: _port, 
+    var settings = ConnectionSettings(
+      //lo siguiente es un constructor con argumentos nombrados
+      host: _host,
+      port: _port,
       user: _user,
-      db: _dbName
+      db: _dbName,
     );
     MySqlConnection conn = await MySqlConnection.connect(settings);
     return conn; //La función crea la conexión y con el return me lo devuelve
   }
-//CREA LA TABLA USUARIO
+
+  //CREA LA TABLA USUARIO
   static Future<void> crearTablaUsers(MySqlConnection conn) async {
     await conn.query("""CREATE TABLE IF NOT EXISTS users (
     iduser INT PRIMARY KEY AUTO_INCREMENT,
@@ -56,7 +62,8 @@ abstract class DataBase {
     monedas INT
     )""");
   }
-//CREA LA TABLA CONTENIDO
+
+  //CREA LA TABLA CONTENIDO
   static Future<void> crearTablaContenido(MySqlConnection conn) async {
     await conn.query("""CREATE TABLE IF NOT EXISTS contenido (
     idcontenido INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
@@ -65,7 +72,8 @@ abstract class DataBase {
     descripcion TEXT
     )""");
   }
-//CREA LA TABLA USUARIOSDISNEY
+
+  //CREA LA TABLA USUARIOSDISNEY
   static Future<void> crearTablaUsuariosContenido(MySqlConnection conn) async {
     await conn.query("""CREATE TABLE IF NOT EXISTS usuarioscontenido (
     idu INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
@@ -74,6 +82,7 @@ abstract class DataBase {
     apodo VARCHAR(50)
     )""");
   }
+
   //CREA LA TABLA FAVORITOS
   static Future<void> crearTablaFavoritos(MySqlConnection conn) async {
     await conn.query("""
@@ -98,8 +107,9 @@ abstract class DataBase {
       )
     """);
   }
+
   static Future<void> crearTablaAlquileres(MySqlConnection conn) async {
-  await conn.query("""
+    await conn.query("""
     CREATE TABLE IF NOT EXISTS alquileres (
       id INT AUTO_INCREMENT PRIMARY KEY,
       idusuario INT,
@@ -107,58 +117,73 @@ abstract class DataBase {
       nombre VARCHAR(50)
     )
   """);
-}
+  }
 
   //GUARDA FAVORITO EN LA BBDD
-  static Future<void> guardarFavorito(int idUsuario, int idContenido, String nombre) async {
-    try{
+  static Future<void> guardarFavorito(
+    int idUsuario,
+    int idContenido,
+    String nombre,
+  ) async {
+    try {
       print("Conectando...");
-    var conn = await obtenerConexion();
-print("INSERTANDO...");
- await conn.query("SET autocommit = 1");
+      var conn = await obtenerConexion();
+      print("INSERTANDO...");
+      await conn.query("SET autocommit = 1");
+      await conn.query(
+        "INSERT INTO favoritos (idusuario, idcontenido, nombre) VALUES (?, ?,?)",
+        [idUsuario, idContenido, nombre],
+      );
+      print("✔ Añadido a FAV.");
+      await conn.close();
+    } catch (error) {
+      print("$error");
+    }
+  }
+
+  //ALQUILA Y GUARDA EN LA BBDD
+  static Future<void> guardarAlquiler(
+    int idUsuario,
+    int idContenido,
+    String nombre,
+  ) async {
+    final conn = await obtenerConexion();
     await conn.query(
-      "INSERT INTO favoritos (idusuario, idcontenido, nombre) VALUES (?, ?,?)",
+      'INSERT INTO alquileres (idUsuario, idContenido, nombre) VALUES (?, ?, ?)',
       [idUsuario, idContenido, nombre],
     );
-print("✔ Añadido a FAV.");
     await conn.close();
-  }catch (error){
-    print("$error");
   }
 
-  }
-  //ALQUILA Y GUARDA EN LA BBDD
-static Future<void> guardarAlquiler(int idUsuario, int idContenido, String nombre) async {
-  final conn = await obtenerConexion();
-  await conn.query(
-    'INSERT INTO alquileres (idUsuario, idContenido, nombre) VALUES (?, ?, ?)',
-    [idUsuario, idContenido, nombre],
-  );
-  await conn.close();
-}
   //  GUARDA COMPRA EN LA BBDD
- static Future<void> guardarCompra(int idUsuario, int idContenido, int precio, String nombre) async {
-  try {
-    print("➡️ CONECTANDO COMPRA");
+  static Future<void> guardarCompra(
+    int idUsuario,
+    int idContenido,
+    int precio,
+    String nombre,
+  ) async {
+    try {
+      print("➡️ CONECTANDO COMPRA");
 
-    var conn = await obtenerConexion();
+      var conn = await obtenerConexion();
 
-    await conn.query("SET autocommit = 1");
+      await conn.query("SET autocommit = 1");
 
-    print("➡️ INSERTANDO COMPRA");
+      print("➡️ INSERTANDO COMPRA");
 
-    await conn.query(
-      "INSERT INTO compras (idusuario, idcontenido, precio, nombre) VALUES (?, ?, ?,?)",
-      [idUsuario, idContenido, precio, nombre],
-    );
+      await conn.query(
+        "INSERT INTO compras (idusuario, idcontenido, precio, nombre) VALUES (?, ?, ?,?)",
+        [idUsuario, idContenido, precio, nombre],
+      );
 
-    print("✔ COMPRA GUARDADA");
+      print("✔ COMPRA GUARDADA");
 
-    await conn.close();
-  } catch (e) {
-    print("❌ ERROR COMPRA: $e");
+      await conn.close();
+    } catch (e) {
+      print("❌ ERROR COMPRA: $e");
+    }
   }
-}
+
   //OJO -> Es estático cuando podemos acceder a él sin necesidad de crear un objeto, se usa para métodos y propiedades
   //que no dependen de esos objetos
   //ASYNC-AWAIT -> Await es una palabra reservada que detiene la ejecución hasta que se completa el método que lleva detrás

@@ -1,13 +1,11 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:mysql1/mysql1.dart';
 import 'dart:math';
 import '../entities/entities.dart';
 import 'utils.dart';
 
-
 //EL PROGRAMA FUNCIONA COMO UNA MAQUINA DE ESTADOS QUE CAMBIAN DE FLUJO
-//TB HAY SIMULADO UN SISTEMA DE ECONOMIA 
+//TB HAY SIMULADO UN SISTEMA DE ECONOMIA
 
 abstract class Navegacion {
   //Una clase abstracta es una clase de la que no podemos crear objetos
@@ -117,7 +115,8 @@ abstract class Navegacion {
       return "login";
     }
   }
-//CREAMOS EL MENÚ HOME
+
+  //CREAMOS EL MENÚ HOME
   static Future<String> home() async {
     String? opcion;
     do {
@@ -133,7 +132,8 @@ abstract class Navegacion {
       return "salir";
     }
   }
-//CREAMOS EL MENÚ BUSCAR
+
+  //CREAMOS EL MENÚ BUSCAR
   static Future<String> buscar() async {
     //VARIABLES DE LISTAS DECLARADAS DENTRO DEL MÉTODO
     List<Contenido> favoritos = [];
@@ -173,16 +173,18 @@ Tipo: ${contenido.tipo}
           break;
 
         case "2":
-          print(
-            "Genial, en un futuro se guardará a favoritos⭐",
-          );
+          print("Genial, en un futuro se guardará a favoritos⭐");
           favoritos.add(contenido); // memoria
-          await DataBase.guardarFavorito(Sesion.usuario!.idusuario, contenido.idContenido ?? -1, contenido.nombre); // BD
+          await DataBase.guardarFavorito(
+            Sesion.usuario!.idusuario,
+            contenido.idContenido ?? -1,
+            contenido.nombre,
+          ); // BD
           break;
         case "3":
-  int precio = Random().nextInt(101) + 50;
+          int precio = Random().nextInt(101) + 50;
 
-  stdout.writeln("""
+          stdout.writeln("""
 Has seleccionado: ${contenido.nombre}
 Precio: $precio monedas
 
@@ -192,49 +194,54 @@ Precio: $precio monedas
 3. Cancelar
 """);
 
-  String eleccion = stdin.readLineSync() ?? "";
+          String eleccion = stdin.readLineSync() ?? "";
 
-  switch (eleccion) {
-    case "1":
-      print("¿Confirmas la compra de ${contenido.nombre} por $precio? (si/no)");
-      String confirmacion = stdin.readLineSync() ?? "";
+          switch (eleccion) {
+            case "1":
+              print(
+                "¿Confirmas la compra de ${contenido.nombre} por $precio? (si/no)",
+              );
+              String confirmacion = stdin.readLineSync() ?? "";
 
-      if (confirmacion.trim() == "si") {
-        compras.add(contenido);
-        await DataBase.guardarCompra(
-          Sesion.usuario!.idusuario,
-          contenido.idContenido ?? -1,
-          precio, contenido.nombre
-        );
-        print("Has comprado ${contenido.nombre} 💳");
-      } else {
-        print("❌Compra cancelada");
-      }
-      break;
+              if (confirmacion.trim() == "si") {
+                compras.add(contenido);
+                await DataBase.guardarCompra(
+                  Sesion.usuario!.idusuario,
+                  contenido.idContenido ?? -1,
+                  precio,
+                  contenido.nombre,
+                );
+                print("Has comprado ${contenido.nombre} 💳");
+              } else {
+                print("❌Compra cancelada");
+              }
+              break;
 
-    case "2":
-      print("¿Confirmas alquiler de ${contenido.nombre} por 20 monedas? (si/no)");
-      String confirmacionAlquiler = stdin.readLineSync() ?? "";
+            case "2":
+              print(
+                "¿Confirmas alquiler de ${contenido.nombre} por 20 monedas? (si/no)",
+              );
+              String confirmacionAlquiler = stdin.readLineSync() ?? "";
 
-      if (confirmacionAlquiler.trim() == "si") {
-        alquileres.add(contenido);
-        await DataBase.guardarAlquiler(
-          Sesion.usuario!.idusuario,
-          contenido.idContenido ?? -1,
-          contenido.nombre,
-        );
-        print("Has alquilado ${contenido.nombre} 🎬");
-      } else {
-        favoritos.add(contenido);
-        print("Guardado en favoritos ⭐");
-      }
-      break;
+              if (confirmacionAlquiler.trim() == "si") {
+                alquileres.add(contenido);
+                await DataBase.guardarAlquiler(
+                  Sesion.usuario!.idusuario,
+                  contenido.idContenido ?? -1,
+                  contenido.nombre,
+                );
+                print("Has alquilado ${contenido.nombre} 🎬");
+              } else {
+                favoritos.add(contenido);
+                print("Guardado en favoritos ⭐");
+              }
+              break;
 
-    case "3":
-      print("❌Operación cancelada");
-      break;
-  }
-  break;
+            case "3":
+              print("❌Operación cancelada");
+              break;
+          }
+          break;
 
         case "4":
           return "home";

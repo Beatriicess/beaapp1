@@ -1,9 +1,10 @@
 import 'utils/utils.dart';
 
 void main() async {
-  await DataBase.instalacion();// instalar la bbdd
+  await DataBase.instalacion(); // instalar la bbdd
   String menu = Navegacion.inicio; //Aquí declaramos nuestra primera pantalla
-  while (true) {//la maquina de estados es un bucle infinito
+  while (true) {
+    //la maquina de estados es un bucle infinito
     //Aquí activamos la máquina de estados de la pantalla, con un bucle, dentro un switch donde evaluamos la variable menú
     //es un bucle infinito, porque nunca deja de cumplirse
     switch (menu) {
@@ -12,22 +13,22 @@ void main() async {
         menu = Navegacion.principal();
         break;
 
-//REGISTRO
+      //REGISTRO
       case "registro":
         menu = await Navegacion.registro();
         break;
-//LOGIN
+      //LOGIN
       case "login":
         menu = await Navegacion.login();
         break;
-//HOME
+      //HOME
       case "home":
-      menu = await Navegacion.home();
-//BUSCAR
+        menu = await Navegacion.home();
+      //BUSCAR
       case "buscar":
-      menu = await Navegacion.buscar();
+        menu = await Navegacion.buscar();
     }
-//SALIR
+    //SALIR
     if (menu == "salir") {
       print("Has elegido salir");
       break;
